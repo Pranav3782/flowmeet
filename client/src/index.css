@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #F5F0E6;
+    color: #111111;
+  }
+}
+
+/* Custom Premium UI Utilities */
+@layer components {
+  .premium-card {
+    background-color: #FFFFFF;
+    border-radius: 24px;
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.015);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .premium-card:hover {
+    box-shadow: 0 16px 40px rgb(0 0 0 / 0.025);
+    transform: translateY(-2px);
+  }
+
+  .btn-pill {
+    border-radius: 999px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-pill-primary {
+    background-color: #111111;
+    color: #FFFFFF;
+  }
+
+  .btn-pill-primary:hover {
+    background-color: #222222;
+    transform: scale(1.02);
+  }
+
+  .btn-pill-outline {
+    border: 1.5px solid #111111;
+    color: #111111;
+    background-color: transparent;
+  }
+
+  .btn-pill-outline:hover {
+    background-color: rgba(17, 17, 17, 0.04);
+    transform: scale(1.02);
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    font-weight: 400;
+    border-radius: 999px;
+    transition: all 0.25s ease;
+  }
+
+  .sidebar-link:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .sidebar-link-active {
+    color: #111111;
+    background-color: #F8D4E5; /* Brand pink active state! */
+    font-weight: 500;
+  }
+
+  .sidebar-link-active:hover {
+    background-color: #F8D4E5;
+    color: #111111;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(17, 17, 17, 0.1);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(17, 17, 17, 0.2);
+}
+
+/* Micro-animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Smooth active tag indicator from the Intelly mockup */
+.active-category-pill {
+  background-color: #111111;
+  color: #FFFFFF;
+  border-radius: 999px;
+}
+
+.inactive-category-pill {
+  background-color: rgba(17, 17, 17, 0.04);
+  color: rgba(17, 17, 17, 0.6);
+  border-radius: 999px;
+}
+
+.inactive-category-pill:hover {
+  background-color: rgba(17, 17, 17, 0.08);
+}

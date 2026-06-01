@@ -1,0 +1,139 @@
+// This is your Prisma Schema file for FlowMeet AI
+// To run on PostgreSQL instead of SQLite, swap out the datasource block:
+//
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  name           String
+  passwordHash   String
+  role           String        @default("MEMBER") // SQLite doesn't strictly require enums if we want flexibility, but we represent it as String to be highly robust.
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  tasks          Task[]        @relation("TaskOwner")
+  activities     ActivityLog[]
+  createdAt      DateTime      @default(now())
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  users     User[]
+  clients   Client[]
+  createdAt DateTime @default(now())
+}
+
+model Client {
+  id              String   @id @default(uuid())
+  companyName     String
+  contactPerson   String
+  email           String   @unique
+  phone           String?
+  industry        String?
+  onboardingStage String   @default("MEETING_SCHEDULED") // String backing enum values: MEETING_SCHEDULED, DISCOVERY_COMPLETED, etc.
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  meetings        Meeting[]
+  tasks           Task[]
+  createdAt       DateTime @default(now())
+}
+
+model Meeting {
+  id            String               @id @default(uuid())
+  title         String
+  purpose       String?
+  meetingType   String               // DISCOVERY, DEMO, ONBOARDING, INTERNAL
+  date          DateTime
+  startTime     String
+  duration      Int                  @default(30)
+  timezone      String               @default("UTC")
+  status        String               @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  hostId        String
+  clientId      String
+  client        Client               @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  participants  MeetingParticipant[]
+  summary       MeetingSummary?
+  remindersSent Boolean              @default(false)
+  createdAt     DateTime             @default(now())
+}
+
+model MeetingParticipant {
+  id        String   @id @default(uuid())
+  meetingId String
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  name      String
+  email     String
+  role      String   // HOST, ATTENDEE, OBSERVER
+}
+
+model MeetingSummary {
+  id         String   @id @default(uuid())
+  meetingId  String   @unique
+  meeting    Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  summary    String   // Executive Summary
+  discussion String   // Key Discussion Points (JSON)
+  decisions  String   // Decisions Made (JSON)
+  risks      String   // Risks (JSON)
+  questions  String   // Questions Raised (JSON)
+  nextSteps  String   // Next Steps (JSON)
+  createdAt  DateTime @default(now())
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  priority    String    @default("MEDIUM") // LOW, MEDIUM, HIGH
+  status      String    @default("PENDING") // PENDING, IN_PROGRESS, REVIEW, COMPLETED
+  ownerId     String?
+  owner       User?     @relation("TaskOwner", fields: [ownerId], references: [id])
+  clientId    String?
+  client      Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  dueDate     DateTime?
+  comments    String?   // JSON array of strings/objects
+  createdAt   DateTime  @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String   // MEETING, TASK, ONBOARDING, AI
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model CalendarIntegration {
+  id           String   @id @default(uuid())
+  userId       String
+  provider     String   // GOOGLE, OUTLOOK
+  accessToken  String
+  refreshToken String?
+  email        String
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
